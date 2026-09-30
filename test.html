@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Test Interactivo IoT · Evaluación</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&family=Syne:wght@700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #060911; --bg-card: rgba(15, 23, 42, 0.8); --border: rgba(255, 255, 255, 0.12);
+    --text: #F8FAFC; --text-muted: #94A3B8; --cyan: #00F2FE; --blue: #4FACFE;
+    --green: #10B981; --red: #EF4444; --gradient: linear-gradient(135deg, var(--cyan), var(--blue));
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; min-height: 100vh; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .container { max-width: 650px; width: 100%; background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 30px; backdrop-filter: blur(16px); }
+  .badge { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--cyan); background: rgba(0, 242, 254, 0.1); border: 1px solid rgba(0, 242, 254, 0.25); padding: 4px 12px; border-radius: 20px; display: inline-block; margin-bottom: 12px; }
+  h1 { font-family: 'Syne', sans-serif; font-size: 1.8rem; margin-bottom: 10px; }
+  .question-box { margin-top: 20px; }
+  .question-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 16px; }
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .opt-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--text); padding: 12px 16px; border-radius: 12px; text-align: left; cursor: pointer; transition: 0.2s; font-size: 0.95rem; }
+  .opt-btn:hover { border-color: var(--cyan); background: rgba(0, 242, 254, 0.08); }
+  .opt-btn.correct { background: rgba(16, 185, 129, 0.2) !important; border-color: var(--green) !important; color: #34D399; }
+  .opt-btn.wrong { background: rgba(239, 68, 68, 0.2) !important; border-color: var(--red) !important; color: #FCA5A5; }
+  .score-card { text-align: center; padding: 30px 10px; }
+  .score-val { font-size: 3.5rem; font-family: 'Syne', sans-serif; color: var(--cyan); margin: 10px 0; }
+  .btn-action { background: var(--gradient); color: #000; font-weight: 700; border: none; padding: 12px 24px; border-radius: 12px; cursor: pointer; font-size: 1rem; margin-top: 20px; transition: 0.2s; text-decoration: none; display: inline-block; }
+  .btn-action:hover { opacity: 0.9; transform: translateY(-2px); }
+</style>
+</head>
+<body>
+
+<div class="container" id="quizBox">
+  <span class="badge">TEST INTERACTIVO IoT</span>
+  <h1 id="qTitle">Cargando preguntas...</h1>
+  <div class="question-box">
+    <div class="options" id="optionsBox"></div>
+  </div>
+</div>
+
+<script>
+  const questions = [
+    {
+      q: "1. Según la definición expuesta, ¿qué es el Internet de las Cosas (IoT)?",
+      opts: [
+        "Un nuevo tipo de cable de fibra óptica para ciudades",
+        "La integración de sensores y software en objetos físicos convirtiéndolos en productos híbridos",
+        "Una red social exclusiva para programadores DAM",
+        "Un sistema operativo para ordenadores cuánticos"
+      ],
+      correct: 1
+    },
+    {
+      q: "2. ¿Por cuánto dinero adquirió Google la compañía Nest en 2014?",
+      opts: ["1.000 millones de $", "500 millones de $", "3.200 millones de $", "10.000 millones de $"],
+      correct: 2
+    },
+    {
+      q: "3. ¿Cómo realiza la flota ALSA la telemetría en tiempo real?",
+      opts: [
+        "Mediante conexión al CAN-BUS y tacógrafo digital",
+        "Con cámaras de fotos manuales en cada parada",
+        "A través de mensajes SMS enviados por los pasajeros",
+        "Utilizando satélites meteorológicos"
+      ],
+      correct: 0
+    },
+    {
+      q: "4. ¿En qué consiste el concepto de 'servitización' en IoT industrial?",
+      opts: [
+        "En regalar los componentes electrónicos",
+        "En cobrar por horas de uso/servicio prestado en lugar de vender el equipo físico",
+        "En sustituir a los ingenieros por robots",
+        "En vender manuales en formato PDF"
+      ],
+      correct: 1
+    },
+    {
+      q: "5. ¿Cuál es el papel clave del desarrollador DAM en la arquitectura IoT?",
+      opts: [
+        "Fabricar los chips de silicio",
+        "Crear las apps controladoras y consumir APIs REST / WebSockets para mostrar datos al usuario",
+        "Instalar las antenas de telefonía",
+        "Escribir los manuales impresos"
+      ],
+      correct: 1
+    }
+  ];
+
+  let currentIdx = 0;
+  let score = 0;
+
+  function renderQuestion() {
+    const quizBox = document.getElementById('quizBox');
+    if (currentIdx >= questions.length) {
+      quizBox.innerHTML = `
+        <div class="score-card">
+          <span class="badge">RESULTADO DE EVALUACIÓN</span>
+          <h2>¡Has completado el Test!</h2>
+          <div class="score-val">${score} / ${questions.length}</div>
+          <p style="color:var(--text-muted);">${score >= 4 ? '¡Excelente trabajo! Has comprendido perfectamente la presentación.' : 'Buen intento. Puedes volver a repasar las diapositivas.'}</p>
+          <a href="index.html" class="btn-action">← Volver a la Presentación</a>
+        </div>
+      `;
+      return;
+    }
+
+    const qData = questions[currentIdx];
+    document.getElementById('qTitle').textContent = qData.q;
+    const optsBox = document.getElementById('optionsBox');
+    optsBox.innerHTML = '';
+
+    qData.opts.forEach((optText, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'opt-btn';
+      btn.textContent = optText;
+      btn.onclick = () => checkAnswer(i, btn);
+      optsBox.appendChild(btn);
+    });
+  }
+
+  function checkAnswer(chosen, btn) {
+    const qData = questions[currentIdx];
+    const allBtns = document.querySelectorAll('.opt-btn');
+    allBtns.forEach(b => b.disabled = true);
+
+    if (chosen === qData.correct) {
+      btn.classList.add('correct');
+      score++;
+    } else {
+      btn.classList.add('wrong');
+      allBtns[qData.correct].classList.add('correct');
+    }
+
+    setTimeout(() => {
+      currentIdx++;
+      renderQuestion();
+    }, 1400);
+  }
+
+  renderQuestion();
+</script>
+</body>
+</html>
